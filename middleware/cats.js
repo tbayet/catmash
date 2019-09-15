@@ -1,6 +1,6 @@
 import { DB } from '~/plugins/firebase.js'
 
-const RESET_DB = true
+const RESET_DB = false
 
 const catsDataToCats = catsData =>
   Object.keys(catsData).map(key =>
