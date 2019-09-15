@@ -2,6 +2,9 @@
 
 > Catmash for job interveiew
 
+## Provide FIREBASE Crendentials
+in the root file **firebase.credentials.json**
+
 ## Build Setup
 
 ``` bash

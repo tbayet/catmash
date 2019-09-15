@@ -70,7 +70,7 @@ export default {
     })
   },
   mounted () {
-    setTimeout(() => { this.votable = true }, 1500)
+    setTimeout(() => { this.votable = true }, 3000)
   },
   methods: {
     ...mapActions({
