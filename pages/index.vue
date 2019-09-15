@@ -6,28 +6,29 @@
     <v-progress-circular
       v-if="!votable"
       class="mt-12"
+      style="position:absolute; z-index: 5"
       :size="150"
       :width="7"
       color="pink"
       indeterminate
     />
     <v-flex
-      v-if="votable && catsFighting && catsFighting.length"
+      v-if="display && catsFighting && catsFighting.length"
       :xs7="cursorOnLeft"
       :xs5="!cursorOnLeft"
       class="transition-flex"
       @mouseenter="cursorOnLeft = true"
-      @click="vote(0)"
+      @click="votable && vote(0)"
     >
       <cat-card :color="$vuetify.theme.themes.dark.info" :img="catsFighting[0].img" />
     </v-flex>
     <v-flex
-      v-if="votable && catsFighting && catsFighting.length"
+      v-if="display && catsFighting && catsFighting.length"
       :xs7="!cursorOnLeft"
       :xs5="cursorOnLeft"
       class="transition-flex"
       @mouseenter="cursorOnLeft = false"
-      @click="vote(1)"
+      @click="votable && vote(1)"
     >
       <cat-card :color="$vuetify.theme.themes.dark.warning" :img="catsFighting[1].img" />
     </v-flex>
@@ -53,6 +54,7 @@ export default {
   },
   data () {
     return {
+      display: false,
       votable: false,
       cursorOnLeft: true
     }
@@ -70,7 +72,8 @@ export default {
     })
   },
   mounted () {
-    setTimeout(() => { this.votable = true }, 3000)
+    setTimeout(() => { this.display = true }, 100)
+    setTimeout(() => { this.votable = true }, 2000)
   },
   methods: {
     ...mapActions({
@@ -78,6 +81,8 @@ export default {
       update: 'cats/update'
     }),
     vote () {
+      this.votable = false
+      setTimeout(() => { this.votable = true }, 100)
       this.catvote({ winner: this.catsFighting[0], looser: this.catsFighting[1] })
     }
   }
