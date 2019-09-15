@@ -8,6 +8,7 @@
       :xs5="!cursorOnLeft"
       class="transition-flex"
       @mouseenter="cursorOnLeft = true"
+      @click="vote(0)"
     >
       <cat-card :color="$vuetify.theme.themes.dark.info" :img="catsFighting[0].img" />
     </v-flex>
@@ -17,6 +18,7 @@
       :xs5="cursorOnLeft"
       class="transition-flex"
       @mouseenter="cursorOnLeft = false"
+      @click="vote(1)"
     >
       <cat-card :color="$vuetify.theme.themes.dark.warning" :img="catsFighting[1].img" />
     </v-flex>
@@ -52,7 +54,10 @@ export default {
   methods: {
     ...mapMutations({
       // setCats: 'cats/set'
-    })
+    }),
+    vote () {
+      this.$store.dispatch('cats/vote', { winner: this.catsFighting[0], looser: this.catsFighting[1] })
+    }
   }
 }
 </script>

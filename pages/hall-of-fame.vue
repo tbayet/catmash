@@ -2,7 +2,7 @@
   <v-row class="hall_fame_container">
     <v-flex
       v-for="(cat, i) in allCats"
-      :key="i"
+      :key="`${i}-${cat.score}`"
       xl1
       lg2
       md3

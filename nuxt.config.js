@@ -72,13 +72,13 @@ export default {
       dark: true,
       themes: {
         dark: {
-          primary: "#bd83ce",
-          accent: "#3b064d",
-          secondary: "#504658",
-          info: "#f7e8f6",
-          warning: "#f1c6e7",
-          error: "#f6f078",
-          success: "#52de97"
+          primary: '#bd83ce',
+          accent: '#3b064d',
+          secondary: '#504658',
+          info: '#f7e8f6',
+          warning: '#f1c6e7',
+          error: '#f6f078',
+          success: '#52de97'
         }
       }
     }
