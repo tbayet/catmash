@@ -1,7 +1,7 @@
 <template>
   <v-row class="hall_fame_container">
     <v-flex
-      v-for="(cat, i) in allCats"
+      v-for="(cat, i) in allCatsSorted"
       :key="`${i}-${cat.score}`"
       xl1
       lg2
@@ -19,7 +19,7 @@
           height="200px"
         />
         <v-card-title>
-          <b>{{ cat.score }}</b> (#{{ cat.id }})
+          <b>#{{ i + 1 }}</b> - ({{ cat.score }} Elo)
         </v-card-title>
       </v-card>
     </v-flex>
@@ -39,7 +39,10 @@ export default {
   computed: {
     ...mapState({
       allCats: state => state.cats.list
-    })
+    }),
+    allCatsSorted () {
+      return [...this.allCats].sort((a, b) => b.score - a.score)
+    }
   },
   mounted () {
     // console.log(this.catsFighting)
