@@ -1,9 +1,18 @@
 <template>
   <v-row
     class="full_size"
+    justify="center"
   >
+    <v-progress-circular
+      v-if="!votable"
+      class="mt-12"
+      :size="150"
+      :width="7"
+      color="pink"
+      indeterminate
+    />
     <v-flex
-      v-if="catsFighting && catsFighting.length"
+      v-if="votable && catsFighting && catsFighting.length"
       :xs7="cursorOnLeft"
       :xs5="!cursorOnLeft"
       class="transition-flex"
@@ -13,7 +22,7 @@
       <cat-card :color="$vuetify.theme.themes.dark.info" :img="catsFighting[0].img" />
     </v-flex>
     <v-flex
-      v-if="catsFighting && catsFighting.length"
+      v-if="votable && catsFighting && catsFighting.length"
       :xs7="!cursorOnLeft"
       :xs5="cursorOnLeft"
       class="transition-flex"
@@ -34,8 +43,9 @@
 </template>
 
 <script>
-import { mapMutations, mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import CatCard from '../components/CatCard.vue'
+import { watchDatabaseUpdate } from '~/middleware/cats.js'
 
 export default {
   components: {
@@ -43,20 +53,32 @@ export default {
   },
   data () {
     return {
+      votable: false,
       cursorOnLeft: true
     }
   },
   computed: {
     ...mapState({
-      catsFighting: state => state.cats.list
+      catsFighting: state => state.cats.versus
     })
   },
+  created () {
+    watchDatabaseUpdate().then((ref) => {
+      ref.on('child_changed', (cat) => {
+        this.update({ ...cat.val(), id: cat.ref.key })
+      })
+    })
+  },
+  mounted () {
+    setTimeout(() => { this.votable = true }, 1500)
+  },
   methods: {
-    ...mapMutations({
-      // setCats: 'cats/set'
+    ...mapActions({
+      catvote: 'cats/vote',
+      update: 'cats/update'
     }),
     vote () {
-      this.$store.dispatch('cats/vote', { winner: this.catsFighting[0], looser: this.catsFighting[1] })
+      this.catvote({ winner: this.catsFighting[0], looser: this.catsFighting[1] })
     }
   }
 }

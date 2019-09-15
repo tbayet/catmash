@@ -84,7 +84,7 @@ export default {
     }
   },
   router: {
-    middleware: 'cats'
+    // middleware: 'cats'
   },
   /*
   ** Build configuration

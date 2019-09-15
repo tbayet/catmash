@@ -1,9 +1,18 @@
 import { initServer } from '~/middleware/cats.js'
 
+export const state = () => ({
+  watchingDatabaseUpdate: false
+})
+
+export const mutations = {
+  watchingDatabase (state) {
+    state.watchingDatabaseUpdate = true
+  }
+}
+
 export const actions = {
-  async nuxtServerInit ({ dispatch }, { $axios }) {
+  async nuxtServerInit (context, { $axios }) {
     const cats = await initServer($axios)
-    await dispatch('cats/set', cats)
-    return true
+    context.dispatch('cats/set', cats)
   }
 }
