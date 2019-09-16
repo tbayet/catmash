@@ -4,7 +4,7 @@
     justify="center"
   >
     <v-progress-circular
-      v-if="!votable"
+      v-if="loading"
       class="mt-12"
       style="position:absolute; z-index: 5"
       :size="150"
@@ -13,22 +13,22 @@
       indeterminate
     />
     <v-flex
-      v-if="display && catsFighting && catsFighting.length"
+      v-if="!loading && catsFighting && catsFighting.length"
       :xs7="cursorOnLeft"
       :xs5="!cursorOnLeft"
       class="transition-flex"
       @mouseenter="cursorOnLeft = true"
-      @click="votable && vote(0)"
+      @click="vote($event, 0)"
     >
       <cat-card :color="$vuetify.theme.themes.dark.info" :img="catsFighting[0].img" />
     </v-flex>
     <v-flex
-      v-if="display && catsFighting && catsFighting.length"
+      v-if="!loading && catsFighting && catsFighting.length"
       :xs7="!cursorOnLeft"
       :xs5="cursorOnLeft"
       class="transition-flex"
       @mouseenter="cursorOnLeft = false"
-      @click="votable && vote(1)"
+      @click="vote($event, 1)"
     >
       <cat-card :color="$vuetify.theme.themes.dark.warning" :img="catsFighting[1].img" />
     </v-flex>
@@ -46,6 +46,7 @@
 <script>
 import { mapState, mapActions } from 'vuex'
 import CatCard from '../components/CatCard.vue'
+import { findNewVersus } from '~/utils/versus.js'
 import { watchDatabaseUpdate } from '~/middleware/cats.js'
 
 export default {
@@ -54,36 +55,47 @@ export default {
   },
   data () {
     return {
-      display: false,
-      votable: false,
+      catsFighting: [],
+      catsWaiting: [],
+      loading: true,
       cursorOnLeft: true
     }
   },
   computed: {
     ...mapState({
-      catsFighting: state => state.cats.versus
-    })
-  },
-  created () {
-    watchDatabaseUpdate().then((ref) => {
-      ref.on('child_changed', (cat) => {
-        this.update({ ...cat.val(), id: cat.ref.key })
-      })
+      cats: state => state.cats.list
     })
   },
   mounted () {
-    setTimeout(() => { this.display = true }, 100)
-    setTimeout(() => { this.votable = true }, 2000)
+    watchDatabaseUpdate().then((ref) => {
+      ref.off('child_changed')
+      this.catsFighting = findNewVersus(this.cats)
+      this.catsWaiting = [...this.catsFighting]
+      setTimeout(() => { this.loading = false }, 1000)
+      ref.on('child_changed', async (cat) => {
+        this.catsWaiting = this.catsWaiting.filter(c => c.id !== cat.ref.key)
+        await this.update({ ...cat.val(), id: cat.ref.key })
+        if (!this.catsWaiting.length) {
+          this.catsFighting = findNewVersus(this.cats)
+          this.catsWaiting = [...this.catsFighting]
+          setTimeout(() => { this.loading = false }, 100)
+        }
+      })
+    })
   },
   methods: {
     ...mapActions({
       catvote: 'cats/vote',
       update: 'cats/update'
     }),
-    vote () {
-      this.votable = false
-      setTimeout(() => { this.votable = true }, 100)
-      this.catvote({ winner: this.catsFighting[0], looser: this.catsFighting[1] })
+    vote (e, i) {
+      if (!this.loading) {
+        this.loading = true
+        setTimeout(() => this.catvote({ winner: this.catsFighting[i], looser: this.catsFighting[i ? 0 : 1] }), 100)
+      } else {
+        e.preventDefault()
+        e.stopPropagation()
+      }
     }
   }
 }

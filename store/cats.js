@@ -20,38 +20,13 @@ const calculateElo = (winner, looser) => {
   }
 }
 
-const findNewVersus = (cats) => {
-  const getOpponentByPriority = cats => cats.reduce((min, cat) => (cat.nb < min.nb ? cat : min), cats[0])
-  const findBestOpponent = (cats, currentCat, eloDiff) =>
-    cats
-      .filter(cat => cat.id !== currentCat.id && Math.abs(currentCat.score - cat.score) === eloDiff)
-      .reduce((best, cat) => (best === null ? cat : cat.nb < best.nb ? cat : best), null)
-  const shortestEloDiff = (cats, currentCat) => cats.reduce((minDiff, cat) => {
-    if (cat.id === currentCat.id) {
-      return minDiff
-    }
-    const diff = Math.abs(currentCat.score - cat.score)
-    return minDiff === null
-      ? diff
-      : diff < minDiff
-        ? diff : minDiff
-  }, null)
-
-  const versus = []
-  versus.push(getOpponentByPriority(cats))
-  versus.push(findBestOpponent(cats, versus[0], shortestEloDiff(cats, versus[0])))
-  return versus
-}
-
 export const state = () => ({
-  list: [],
-  versus: []
+  list: []
 })
 
 export const mutations = {
   set (state, cats) {
     state.list = cats
-    state.versus = findNewVersus(cats)
   },
   update (state, cat) {
     const index = state.list.findIndex(elem => elem.id === cat.id)
@@ -61,7 +36,6 @@ export const mutations = {
         cat,
         ...state.list.slice(index + 1, state.list.length)
       ]
-      state.versus = findNewVersus(state.list)
     }
   }
 }
@@ -70,12 +44,14 @@ export const actions = {
   set (context, cats) {
     context.commit('set', cats)
   },
-  vote (context, { winner, looser }) {
+  async vote (context, { winner, looser }) {
     const eloResults = calculateElo(winner, looser)
-    updateCatDB(eloResults.winner)
-    updateCatDB(eloResults.looser)
+    await updateCatDB(eloResults.winner)
+    await updateCatDB(eloResults.looser)
+    return true
   },
-  update (context, cat) {
-    context.commit('update', cat)
+  async update (context, cat) {
+    await context.commit('update', cat)
+    return true
   }
 }
