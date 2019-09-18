@@ -16,7 +16,7 @@ export const findNewVersus = (cats) => {
   }, null)
 
   const versus = []
-  versus.push(getOpponentByPriority(cats))
-  versus.push(findBestOpponent(cats, versus[0], shortestEloDiff(cats, versus[0])))
+  versus.push({ ...getOpponentByPriority(cats) })
+  versus.push({ ...findBestOpponent(cats, versus[0], shortestEloDiff(cats, versus[0])) })
   return versus
 }

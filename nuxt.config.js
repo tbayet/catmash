@@ -1,5 +1,3 @@
-import colors from 'vuetify/es5/util/colors'
-
 export default {
   mode: 'universal',
   /*
@@ -30,7 +28,7 @@ export default {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    '~/plugins/firebase.js'
+    // '~/plugins/firebase.js'
   ],
   /*
   ** Nuxt.js dev-modules
@@ -45,26 +43,25 @@ export default {
   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios',
-    '@nuxtjs/proxy'
+    '@nuxtjs/axios'
+    // '@nuxtjs/proxy'
   ],
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    proxy: true
+    // proxy: true
   },
 
-  proxy: {
-    '/api/': { target: 'https://latelier.co/data/', pathRewrite: { '^/api/': '' }, changeOrigin: true }
-  },
+  // proxy: {
+  //   '/api/': { target: 'https://latelier.co/data/', pathRewrite: { '^/api/': '' }, changeOrigin: true }
+  // },
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module
   */
   vuetify: {
-    customVariables: ['~/assets/variables.scss'],
     theme: {
       options: {
         customProperties: true

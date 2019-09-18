@@ -19,7 +19,7 @@
           height="200px"
         />
         <v-card-title>
-          <b>#{{ i + 1 }}</b> - ({{ cat.score }} Elo)
+          <b>#{{ i + 1 }}</b> - ({{ cat.score }} Elo) - {{ cat.nb }}
         </v-card-title>
       </v-card>
     </v-flex>
@@ -28,14 +28,9 @@
 
 <script>
 import { mapMutations, mapState } from 'vuex'
+import { initServer } from '~/utils/cats.js'
 
 export default {
-  components: {
-  },
-  data () {
-    return {
-    }
-  },
   computed: {
     ...mapState({
       allCats: state => state.cats.list
@@ -44,10 +39,14 @@ export default {
       return [...this.allCats].sort((a, b) => b.score - a.score)
     }
   },
-  mounted () {
-    // console.log(this.catsFighting)
+  async mounted () {
+    await this.fetchCatsDatas()
   },
   methods: {
+     async fetchCatsDatas () {
+      const cats = await initServer(this.$axios)
+      return this.$store.dispatch('cats/set', cats)
+    },
     ...mapMutations({
       setCats: 'cats/set'
     })
